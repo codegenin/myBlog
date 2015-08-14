@@ -11,16 +11,17 @@
 |
 */
 
-// Blog Pages
-get('/', 'BlogController@index');
-get('/{slug}', 'BlogController@showPost');
-
 // Admin Pages
 $router->group(['namespace' => 'Admin', 'middleware' => 'auth'], function() {
+    get('admin', 'DashboardController@index');
     resource('admin/post', 'PostController');
     resource('admin/tag', 'TagController');
     get('admin/upload', 'UploadController@index');
 });
+
+// Blog Pages
+get('/', 'BlogController@index');
+get('/{slug}', 'BlogController@showPost');
 
 // Logging in and out
 get('/auth/login',  'Auth\AuthController@getLogin');
