@@ -12,6 +12,9 @@
 */
 
 // Blog Pages
+get('/', function () {
+    return redirect('/blog');
+});
 get('/blog/', 'BlogController@index');
 get('/blog/{slug}', 'BlogController@showPost');
 
@@ -19,7 +22,9 @@ get('/blog/{slug}', 'BlogController@showPost');
 $router->group(['namespace' => 'Admin', 'middleware' => 'auth'], function() {
     get('admin', 'DashboardController@index');
     resource('admin/post', 'PostController');
-    resource('admin/tag', 'TagController');
+    resource('admin/tag', 'TagController', [
+        'except' => 'show' // Do not include this method
+    ]);
     get('admin/upload', 'UploadController@index');
 });
 
