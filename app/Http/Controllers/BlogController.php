@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\BlogIndexData;
 use App\Post;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -16,26 +17,30 @@ class BlogController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::where('published_at', '<=', Carbon::now())
-            ->orderBy('published_at', 'desc')
-            ->paginate(config('blog.posts_per_page'));
-
-        return view('blog.index', compact('posts'));
+        $tag    = $request->get('tag');
+        $data   = $this->dispatch(new BlogIndexData($tag));
+        $layout = $tag ? Tag::layout($tag) : 'blog.index';
+        return view($layout, $data);
     }
 
     /**
      * Show a blog post entry
      *
      * @param $slug
+     * @param Request $request
      * @return \Illuminate\View\View
      */
-    public function showPost($slug)
+    public function showPost($slug, Request $request)
     {
-        $post = Post::whereSlug($slug)->firstOrFail();
+        $post = Post::with('tags')->whereSlug($slug)->firstOrFail();
+        $tag = $request->get('tag');
+        if ($tag) {
+            $tag = Tag::whereTag($tag)->firstOrFail();
+        }
 
-        return view('blog.showPost', compact('post'));
+        return view($post->layout, compact('post', 'tag'));
     }
 
 

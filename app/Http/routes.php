@@ -21,7 +21,7 @@ get('/blog/{slug}', 'BlogController@showPost');
 // Admin Pages
 $router->group(['namespace' => 'Admin', 'middleware' => 'auth'], function() {
     get('admin', 'DashboardController@index');
-    resource('admin/post', 'PostController');
+    resource('admin/post', 'PostController', ['except' => 'show']);
     resource('admin/tag', 'TagController', [
         'except' => 'show' // Do not include this method
     ]);
